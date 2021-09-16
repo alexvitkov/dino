@@ -5,11 +5,12 @@ CXX=clang
 CXXFLAGS=--target=wasm32 \
          -ffreestanding \
          -nostdlib \
+	 -fvisibility=hidden \
          -O3
 
 LD=wasm-ld
 
-LDFLAGS=--no-entry
+LDFLAGS=--no-entry --export-dynamic
 
 all: bundle.js main.wasm
 
@@ -26,4 +27,4 @@ main.wasm: math.cpp.o
 
 
 clean:
-	rm -f *.js *.js.map *.cpp.o
+	rm -f *.js *.js.map *.cpp.o *.wasm
