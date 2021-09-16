@@ -77,7 +77,6 @@ function uploadBuffer(gltf: GLTFJson, location: number, accessor_index: number):
     offset += accessor.byteOffset;
     
   const arr = new Uint8Array(data, offset, bufferView.byteLength);
-  console.log(arr)
   gl.bufferData(location, arr, gl.STATIC_DRAW);
 
   return glBuffer;
@@ -141,8 +140,6 @@ export async function load(path: string): Promise<Mesh> {
     const resp = await fetch(basedir + buf.uri);
     buf._data = await resp.arrayBuffer();
   }));
-
-  console.log(gltf);
 
   return loadPrimitive(gltf, gltf.meshes[0].primitives[0]);
 }
