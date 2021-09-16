@@ -1,4 +1,5 @@
+import * as gl from "./gl";
 
 
-
-alert(0)
+gl.init();
+gl.mainLoop();
