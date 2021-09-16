@@ -1,6 +1,6 @@
 
-#define EXPORT(name) __attribute__((export_name(name)))
-#define IMPORT(name) __attribute__((import_name(name)))
+#define EXPORT(name) __attribute__((export_name(name))) extern "C"
+#define IMPORT(name) __attribute__((import_name(name))) extern "C"
 #define EXPORT_VAR __attribute__((visibility("default")))
 
 
