@@ -3,4 +3,5 @@ node_modules
 *.js.map
 .log
 .clangd
-
+*.cpp.o
+*.wasm

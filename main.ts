@@ -1,5 +1,6 @@
 import * as gl from "./gl";
 import * as gltf from "./gltf";
+import * as wasm from "./wasm";
 
 
 
@@ -7,6 +8,8 @@ import * as gltf from "./gltf";
 
 async function main() {
   gl.init();
+
+  await wasm.init();
   const monkey = await gltf.load("/assets/monkey.gltf")
 
   const vert = gl.compileShader(gl.gl.VERTEX_SHADER, `#version 300 es 
