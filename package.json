@@ -1,0 +1,25 @@
+{
+  "name": "dino",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexvitkov/dino.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": "true",
+  "bugs": {
+    "url": "https://github.com/alexvitkov/dino/issues"
+  },
+  "homepage": "https://github.com/alexvitkov/dino#readme",
+  "dependencies": {
+    "esbuild": "^0.12.28",
+    "typescript": "^4.4.3"
+  }
+}
