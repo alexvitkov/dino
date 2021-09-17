@@ -94,3 +94,39 @@ export function rotate_z(mat: Float32Array, angle: number) {
   mat[12] = c*a03 + s*a13;
   mat[13] = -s*a03 + c*a13;
 }
+
+export function translate(mat: Float32Array, v: Float32Array) {
+  let x = v[0];
+  let y = v[1];
+  let z = v[2];
+
+  mat[12] = mat[0] * x + mat[4] * y + mat[8]  * z + mat[12];
+  mat[13] = mat[1] * x + mat[5] * y + mat[9]  * z + mat[13];
+  mat[14] = mat[2] * x + mat[6] * y + mat[10] * z + mat[14];
+  mat[15] = mat[3] * x + mat[7] * y + mat[11] * z + mat[15];
+
+  return mat;
+}
+
+export function perspective(out: Float32Array, fovy: number, aspect: number, near: number, far: number) {
+  const f = 1.0 / Math.tan(fovy / 2);
+
+  out[0] = f / aspect;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = f;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[11] = -1;
+  out[12] = 0;
+  out[13] = 0;
+  out[15] = 0;
+
+  const nf = 1 / (near - far);
+  out[10] = (far + near) * nf;
+  out[14] = 2 * far * near * nf;
+}
