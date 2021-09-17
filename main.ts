@@ -52,16 +52,14 @@ let time: number;
 
 
 const the_matrix = mat4.make();
-mat4.identity(the_matrix);
+mat4.perspective(the_matrix, 1.0472, 16/9, 0.1, 100);
+mat4.translate(the_matrix, new Float32Array([0, 0, -1]));
 
 function frame() {
-  time = performance.now()
-  ;
+  time = performance.now();
   dt = time - lastTime;
   lastTime = time;
 
-  mat4.rotate_x(the_matrix, 0.01);
-  mat4.rotate_y(the_matrix, 0.01);
  
   gl.gl.useProgram(prog);
   gl.gl.uniformMatrix4fv(loc, false, the_matrix);

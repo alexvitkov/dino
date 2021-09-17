@@ -1,5 +1,4 @@
 
-
 export function make(): Float32Array {
   return new Float32Array(16);
 }
