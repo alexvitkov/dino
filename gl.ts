@@ -14,14 +14,6 @@ export function init() {
   gl.depthFunc(gl.LESS);
 }
 
-export function mainLoop() {
-  gl.clearColor(1,0,0,1);
-  gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-
-  window.requestAnimationFrame(mainLoop);
-}
-
-
 export function compileShader(type: GLenum, source: string): WebGLShader {
   const shader = gl.createShader(type);
 

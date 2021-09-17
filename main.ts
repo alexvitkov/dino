@@ -2,10 +2,15 @@ import * as gl from "./gl";
 import * as gltf from "./gltf";
 import * as mat4 from "./mat4";
 
+
+var monkey;
+var prog;
+var loc;
+
 async function main() {
   gl.init();
 
-  const monkey = await gltf.load("/assets/monkey.gltf")
+  monkey = await gltf.load("/assets/monkey.gltf")
 
   const vert = gl.compileShader(gl.gl.VERTEX_SHADER, `#version 300 es 
 
@@ -33,19 +38,42 @@ void main() {
 `);
 
 
-  const prog = gl.linkProgram(vert, frag);
-  const prog_matrix_location = gl.gl.getUniformLocation(prog, 'the_matrix');
+  prog = gl.linkProgram(vert, frag);
+  loc = gl.gl.getUniformLocation(prog, 'the_matrix');
 
-  const the_matrix = mat4.make();
-  mat4.identity(the_matrix);
+  frame();
+}
 
+
+let currentFrame = 0;
+let dt = 0;
+let lastTime = -1/30;
+let time: number;
+
+
+const the_matrix = mat4.make();
+mat4.identity(the_matrix);
+
+function frame() {
+  time = performance.now()
+  ;
+  dt = time - lastTime;
+  lastTime = time;
+
+  mat4.rotate_x(the_matrix, 0.01);
+  mat4.rotate_y(the_matrix, 0.01);
+ 
   gl.gl.useProgram(prog);
-  gl.gl.uniformMatrix4fv(prog_matrix_location, false, the_matrix);
+  gl.gl.uniformMatrix4fv(loc, false, the_matrix);
 
   gl.gl.clearColor(0,0,0,1);
   gl.gl.clear(gl.gl.DEPTH_BUFFER_BIT | gl.gl.COLOR_BUFFER_BIT);
 
   monkey.draw();
+
+  window.requestAnimationFrame(frame);
+
+  currentFrame++;
 }
 
 
