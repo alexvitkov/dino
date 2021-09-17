@@ -1,18 +1,16 @@
 import * as gl from "./gl";
 import * as gltf from "./gltf";
-import * as wasm from "./wasm";
-
-
-
-
+import * as mat4 from "./mat4";
 
 async function main() {
   gl.init();
 
-  await wasm.init();
   const monkey = await gltf.load("/assets/monkey.gltf")
 
   const vert = gl.compileShader(gl.gl.VERTEX_SHADER, `#version 300 es 
+
+uniform mat4 the_matrix;
+
 in vec3 position;
 in vec3 normal;
 
@@ -20,7 +18,7 @@ out vec3 _normal;
 
 void main() {
     _normal = normal;
-    gl_Position = vec4(position / 3.0, 1);
+    gl_Position = the_matrix * vec4(position / 3.0, 1);
 }
 `);
 
@@ -36,8 +34,13 @@ void main() {
 
 
   const prog = gl.linkProgram(vert, frag);
+  const prog_matrix_location = gl.gl.getUniformLocation(prog, 'the_matrix');
+
+  const the_matrix = mat4.make();
+  mat4.identity(the_matrix);
 
   gl.gl.useProgram(prog);
+  gl.gl.uniformMatrix4fv(prog_matrix_location, false, the_matrix);
 
   gl.gl.clearColor(0,0,0,1);
   gl.gl.clear(gl.gl.DEPTH_BUFFER_BIT | gl.gl.COLOR_BUFFER_BIT);
