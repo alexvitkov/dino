@@ -1,73 +1,49 @@
 import * as gl from "./gl";
 import * as gltf from "./gltf";
 import * as mat4 from "./mat4";
+import * as scene from "./scene";
+import * as StandardProgram from "./StandardProgram";
+import RenderObject from "./RenderObject";
 
-
-var monkey;
-var prog;
-var loc;
-
-async function main() {
-  gl.init();
-
-  monkey = await gltf.load("/assets/monkey.gltf")
-
-  const vert = gl.compileShader(gl.gl.VERTEX_SHADER, `#version 300 es 
-
-uniform mat4 the_matrix;
-
-in vec3 position;
-in vec3 normal;
-
-out vec3 _normal;
-
-void main() {
-    _normal = normal;
-    gl_Position = the_matrix * vec4(position / 3.0, 1);
-}
-`);
-
-  const frag = gl.compileShader(gl.gl.FRAGMENT_SHADER, `#version 300 es 
-in highp vec3 _normal;
-
-out highp vec4 out_color;
-
-void main() {
-    out_color = vec4(_normal / 2.0 + vec3(0.5, 0.5, 0.5), 1);
-}
-`);
-
-
-  prog = gl.linkProgram(vert, frag);
-  loc = gl.gl.getUniformLocation(prog, 'the_matrix');
-
-  frame();
-}
-
+var the_scene: scene.Scene;
+var the_monkey: RenderObject;
+var monkeyMesh: gltf.Mesh;
 
 let currentFrame = 0;
 let dt = 0;
 let lastTime = -1/30;
 let time: number;
 
+async function main() {
+  gl.init();
+  StandardProgram.init();
+  monkeyMesh = await gltf.load("/assets/monkey.gltf")
+  the_scene = new scene.Scene();
 
-const the_matrix = mat4.make();
-mat4.perspective(the_matrix, 1.0472, 16/9, 0.1, 100);
-mat4.translate(the_matrix, new Float32Array([0, 0, -1]));
+  the_monkey = new RenderObject();
+  the_monkey.mesh = monkeyMesh;
+  the_monkey.modelMatrix = mat4.make();
+
+  mat4.identity(the_monkey.modelMatrix);
+  the_scene.addObject(the_monkey);
+  
+  frame();
+}
+
+
+
+
 
 function frame() {
   time = performance.now();
   dt = time - lastTime;
   lastTime = time;
 
- 
-  gl.gl.useProgram(prog);
-  gl.gl.uniformMatrix4fv(loc, false, the_matrix);
-
   gl.gl.clearColor(0,0,0,1);
   gl.gl.clear(gl.gl.DEPTH_BUFFER_BIT | gl.gl.COLOR_BUFFER_BIT);
 
-  monkey.draw();
+  the_scene.draw();
+  mat4.rotate_y(the_monkey.modelMatrix, 0.01);
 
   window.requestAnimationFrame(frame);
 

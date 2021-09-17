@@ -45,7 +45,7 @@ interface GLTFPrimitive {
 }
 
 
-class Mesh {
+export class Mesh {
   numIndices: number;
   vao: WebGLVertexArrayObject;
   positions: WebGLBuffer;

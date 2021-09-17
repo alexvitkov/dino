@@ -94,6 +94,7 @@ export function rotate_z(mat: Float32Array, angle: number) {
   mat[13] = -s*a03 + c*a13;
 }
 
+
 export function translate(mat: Float32Array, v: Float32Array) {
   let x = v[0];
   let y = v[1];
