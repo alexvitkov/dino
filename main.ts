@@ -1,6 +1,5 @@
 import * as gl from "./gl";
 import * as gltf from "./gltf";
-import * as mat4 from "./mat4";
 import * as scene from "./scene";
 import * as StandardProgram from "./StandardProgram";
 import RenderObject from "./RenderObject";
@@ -22,9 +21,7 @@ async function main() {
 
   the_monkey = new RenderObject();
   the_monkey.mesh = monkeyMesh;
-  the_monkey.modelMatrix = mat4.make();
 
-  mat4.identity(the_monkey.modelMatrix);
   the_scene.addObject(the_monkey);
   
   frame();
@@ -43,7 +40,7 @@ function frame() {
   gl.gl.clear(gl.gl.DEPTH_BUFFER_BIT | gl.gl.COLOR_BUFFER_BIT);
 
   the_scene.draw();
-  mat4.rotate_y(the_monkey.modelMatrix, 0.01);
+  the_monkey.updateModelMatrix();
 
   window.requestAnimationFrame(frame);
 
