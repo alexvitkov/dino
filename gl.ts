@@ -1,5 +1,5 @@
 export var gl: WebGL2RenderingContext;
-var canvas: HTMLCanvasElement;
+export var canvas: HTMLCanvasElement;
 
 export function init() {
   canvas = document.getElementById("dino_canvas") as HTMLCanvasElement;
@@ -9,6 +9,8 @@ export function init() {
   gl = canvas.getContext("webgl2");
   if (!gl)
     throw "webgl 2 not supported";
+
+  canvas.onmousedown = () => canvas.requestPointerLock();
 
   gl.enable(gl.DEPTH_TEST);
   gl.depthFunc(gl.LESS);
