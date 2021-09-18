@@ -22,8 +22,8 @@ export class Scene {
 
   updateViewMatrix() {
     mat4.identity(this.view);
-    mat4.rotateY(this.view, this.view, this.cameraYaw);
     mat4.rotateX(this.view, this.view, this.cameraPitch);
+    mat4.rotateY(this.view, this.view, this.cameraYaw);
     mat4.translate(this.view, this.view, [this.cameraPosition[0],this.cameraPosition[1],this.cameraPosition[2]]);
   }
 

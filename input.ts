@@ -1,6 +1,7 @@
 import { canvas } from "./gl";
 
 export const pressed: {[key: string]: boolean} = {};
+export var hasPointerLock = false;
 
 interface Axis {
   value(): number;
@@ -39,16 +40,19 @@ export const axes = {
   mouseY: new MouseAxis(),
 }
 
-function onkeydown(e: KeyboardEvent) {
+
+//
+// Initialize the Input system
+//
+document.onkeydown = function (e: KeyboardEvent) {
   pressed[e.key] = true;
 }
 
-function onkeyup(e: KeyboardEvent) {
+document.onkeyup = function (e: KeyboardEvent) {
   pressed[e.key] = false;
 }
 
-function onmousemove(e: MouseEvent) {
-
+document.onmousemove = function (e: MouseEvent) {
   const r = canvas.getBoundingClientRect();
   //const newMouseX =  2 * (e.clientX - r.x) / canvas.width  - 1;
   //const newMouseY = -2 * (e.clientY - r.y) / canvas.height + 1;
@@ -57,10 +61,12 @@ function onmousemove(e: MouseEvent) {
   axes.mouseY.delta += e.movementY / canvas.height;
 }
 
+canvas.onmousedown = (e) => {
+  if (e.which === 1) {
+    canvas.requestPointerLock();
+  }
+}
 
-//
-// Initialize the Input system
-//
-document.onkeydown = onkeydown;
-document.onkeyup = onkeyup;
-document.onmousemove = onmousemove;
+document.onpointerlockchange = () => {
+  hasPointerLock = document.pointerLockElement === canvas;
+}

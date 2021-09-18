@@ -3,6 +3,7 @@ import * as gltf from "./gltf";
 import * as scene from "./scene";
 import * as input from "./input";
 import * as StandardProgram from "./StandardProgram";
+import * as cameraMovement from "./cameraMovement";
 import RenderObject from "./RenderObject";
 
 
@@ -10,8 +11,6 @@ var the_scene: scene.Scene;
 var the_monkey: RenderObject;
 var monkeyMesh: gltf.Mesh;
 
-let sensitivityX = 100;
-let sensitivityY = 100;
 
 let currentFrame = 0;
 let dt = 0;
@@ -35,10 +34,11 @@ async function main() {
 
 
 function frame() {
-  the_scene.cameraYaw += dt * input.axes.mouseX.value() * sensitivityX;
-  the_scene.cameraPitch += dt * input.axes.mouseY.value() * sensitivityY;
 
-  the_scene.cameraPosition[2] += dt * input.axes.vertical.value();
+  if (input.hasPointerLock) {
+    cameraMovement.mouseLookStep(the_scene, dt);
+    cameraMovement.cameraFlyStep(the_scene, dt);
+  }
 
   the_scene.updateViewMatrix();
   the_monkey.updateModelMatrix();
