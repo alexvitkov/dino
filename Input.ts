@@ -3,6 +3,9 @@ import { canvas } from "./GL";
 export const pressed: {[key: string]: boolean} = {};
 export var hasPointerLock = false;
 
+export var mouseX = 0;
+export var mouseY = 0;
+
 interface Axis {
   value(): number;
 };
@@ -54,8 +57,8 @@ document.onkeyup = function (e: KeyboardEvent) {
 
 document.onmousemove = function (e: MouseEvent) {
   const r = canvas.getBoundingClientRect();
-  //const newMouseX =  2 * (e.clientX - r.x) / canvas.width  - 1;
-  //const newMouseY = -2 * (e.clientY - r.y) / canvas.height + 1;
+  mouseX =  2 * (e.clientX - r.x) / canvas.width  - 1;
+  mouseY = -2 * (e.clientY - r.y) / canvas.height + 1;
 
   axes.mouseX.delta += e.movementX / canvas.width;
   axes.mouseY.delta += e.movementY / canvas.height;
