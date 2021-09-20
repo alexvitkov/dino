@@ -2,13 +2,8 @@ import { gl, compileShader, linkProgram } from "./GL";
 import { ProgramWithObjects } from "./ProgramWithObjects";
 import RenderObject from "./RenderObject";
 
-var program: WebGLProgram;
-var modelMatrixLocation: WebGLUniformLocation;
-var viewMatrixLocation: WebGLUniformLocation;
-var projMatrixLocation: WebGLUniformLocation;
 
-export function init() {
-  const vert = compileShader(gl.VERTEX_SHADER, `#version 300 es 
+const vert = compileShader(gl.VERTEX_SHADER, `#version 300 es 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
@@ -24,7 +19,7 @@ void main() {
 }
 `);
 
-  const frag = compileShader(gl.FRAGMENT_SHADER, `#version 300 es 
+const frag = compileShader(gl.FRAGMENT_SHADER, `#version 300 es 
 in highp vec3 _normal;
 
 out highp vec4 out_color;
@@ -34,12 +29,10 @@ void main() {
 }
 `);
 
-  program = linkProgram(vert, frag);
-
-  modelMatrixLocation = gl.getUniformLocation(program, 'model');
-  viewMatrixLocation = gl.getUniformLocation(program, 'view');
-  projMatrixLocation = gl.getUniformLocation(program, 'proj');
-}
+const program = linkProgram(vert, frag);
+const modelMatrixLocation = gl.getUniformLocation(program, 'model');
+const viewMatrixLocation = gl.getUniformLocation(program, 'view');
+const projMatrixLocation = gl.getUniformLocation(program, 'proj');
 
 
 export class StandardProgramWithObjects implements ProgramWithObjects {

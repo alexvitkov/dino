@@ -1,18 +1,20 @@
 export var gl: WebGL2RenderingContext;
 export var canvas: HTMLCanvasElement = document.getElementById("dino_canvas") as HTMLCanvasElement;;
 
-export function init() {
-  if (!canvas)
-    throw "canvas with id dino_canvas doesn't exist";
+//
+// WebGL Initialization
+//
+if (!canvas)
+  throw "canvas with id dino_canvas doesn't exist";
 
-  gl = canvas.getContext("webgl2");
-  if (!gl)
-    throw "webgl 2 not supported";
+gl = canvas.getContext("webgl2");
+if (!gl)
+  throw "webgl 2 not supported";
+
+gl.enable(gl.DEPTH_TEST);
+gl.depthFunc(gl.LESS);
 
 
-  gl.enable(gl.DEPTH_TEST);
-  gl.depthFunc(gl.LESS);
-}
 
 export function compileShader(type: GLenum, source: string): WebGLShader {
   const shader = gl.createShader(type);

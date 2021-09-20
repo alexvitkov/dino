@@ -1,15 +1,12 @@
 import * as GL from "./GL";
 import * as GLTF from "./GLTF";
 import * as Input from "./Input";
-import * as StandardProgram from "./StandardProgram";
 import * as CameraMovement from "./CameraMovement";
 import RenderObject from "./RenderObject";
 import Scene from "./Scene";
 
-
-var theScene: Scene;
-var theMonkey: RenderObject;
-var monkeyMesh: GLTF.Mesh;
+const theScene: Scene = new Scene();
+var theMonkey;
 
 
 let currentFrame = 0;
@@ -17,24 +14,7 @@ let dt = 0;
 let lastTime = -1/30;
 let time: number;
 
-async function main() {
-  GL.init();
-  StandardProgram.init();
-  monkeyMesh = await GLTF.load("/assets/monkey.gltf")
-  theScene = new Scene();
-  theScene.cameraPosition[2] = -10;
-
-  theMonkey = new RenderObject();
-  theMonkey.mesh = monkeyMesh;
-
-  theScene.addObject(theMonkey);
-  
-  engineFrame();
-}
-
-
 function frame() {
-
   if (Input.hasPointerLock) {
     CameraMovement.mouseLookStep(theScene, dt);
     CameraMovement.cameraFlyStep(theScene, dt);
@@ -54,7 +34,6 @@ function engineFrame() {
   GL.gl.clearColor(0,0,0,1);
   GL.gl.clear(GL.gl.DEPTH_BUFFER_BIT | GL.gl.COLOR_BUFFER_BIT);
 
-
   frame();
 
   theScene.draw();
@@ -68,4 +47,13 @@ function engineFrame() {
 }
 
 
-main();
+(async function () {
+  const monkeyMesh = await GLTF.load("/assets/monkey.gltf")
+  theScene.cameraPosition[2] = -10;
+
+  theMonkey = new RenderObject(monkeyMesh);
+
+  theScene.addObject(theMonkey);
+  
+  engineFrame();
+})()
