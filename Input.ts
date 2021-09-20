@@ -1,4 +1,5 @@
 import { canvas } from "./GL";
+import * as Camera from "./Camera";
 
 export const pressed: {[key: string]: boolean} = {};
 export var hasPointerLock = false;
@@ -62,6 +63,9 @@ document.onmousemove = function (e: MouseEvent) {
 
   axes.mouseX.delta += e.movementX / canvas.width;
   axes.mouseY.delta += e.movementY / canvas.height;
+
+
+  Camera.screenToWorldPoint(mouseX, mouseY);
 }
 
 canvas.onmousedown = (e) => {

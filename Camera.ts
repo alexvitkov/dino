@@ -41,3 +41,10 @@ export function cameraFlyStep(the_scene: Scene) {
 
   vec3.add(the_scene.cameraPosition, the_scene.cameraPosition, vec);
 }
+
+
+export function screenToWorldPoint(x, y) {
+  const vec = [x,y,1,1];
+  vec3.transformMat4(vec, vec, Scene.current.projInverse);
+  console.log(vec);
+}

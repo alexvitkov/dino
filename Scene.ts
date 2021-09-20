@@ -15,11 +15,14 @@ export default class Scene {
 
   view: Float32Array = mat4.create();
   proj: Float32Array = mat4.create();
+  projInverse: Float32Array = mat4.create();
 
   static current = new Scene();
 
   constructor() {
     mat4.perspective(this.proj, 1.074, 16/9, 0.1, 500);
+    mat4.invert(this.projInverse, this.proj);
+
     this.updateViewMatrix();
   }
 
