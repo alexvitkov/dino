@@ -4,6 +4,7 @@ import * as CameraMovement from "./CameraMovement";
 import * as MainLoop from "./MainLoop";
 import RenderObject from "./RenderObject";
 import Scene from "./Scene";
+import MoveGizmo from "./MoveGizmo";
 
 function frame() {
   if (Input.hasPointerLock) {
