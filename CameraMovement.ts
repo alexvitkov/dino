@@ -1,6 +1,7 @@
 import * as Input from "./Input";
 import * as vec3 from "./gl-matrix/vec3";
-import { Scene } from "./Scene";
+import * as Time from "./Time";
+import Scene from "./Scene";
 
 
 let flySpeed = 5;
@@ -9,13 +10,13 @@ let sensitivityX = 100;
 let sensitivityY = 100;
 
 
-export function mouseLookStep(the_scene: Scene, dt) {
-  the_scene.cameraYaw += dt * Input.axes.mouseX.value() * sensitivityX;
-  the_scene.cameraPitch += dt * Input.axes.mouseY.value() * sensitivityY;
+export function mouseLookStep(the_scene: Scene) {
+  the_scene.cameraYaw += Time.deltaTime * Input.axes.mouseX.value() * sensitivityX;
+  the_scene.cameraPitch += Time.deltaTime * Input.axes.mouseY.value() * sensitivityY;
 }
 
 
-export function cameraFlyStep(the_scene: Scene, dt) {
+export function cameraFlyStep(the_scene: Scene) {
 
   let h = -Input.axes.horizontal.value();
   let v = Input.axes.vertical.value();
@@ -33,9 +34,9 @@ export function cameraFlyStep(the_scene: Scene, dt) {
 
   let len = vec3.length(vec);
   if (len > 0.01) {
-    vec[0] *= dt * flySpeed / len;
-    vec[1] *= dt * flySpeed / len;
-    vec[2] *= dt * flySpeed / len;
+    vec[0] *= Time.deltaTime * flySpeed / len;
+    vec[1] *= Time.deltaTime * flySpeed / len;
+    vec[2] *= Time.deltaTime * flySpeed / len;
   }
 
   vec3.add(the_scene.cameraPosition, the_scene.cameraPosition, vec);

@@ -7,8 +7,8 @@ import Scene from "./Scene";
 
 function frame() {
   if (Input.hasPointerLock) {
-    CameraMovement.mouseLookStep(Scene.current, MainLoop.dt);
-    CameraMovement.cameraFlyStep(Scene.current, MainLoop.dt);
+    CameraMovement.mouseLookStep(Scene.current);
+    CameraMovement.cameraFlyStep(Scene.current);
     Scene.current.updateViewMatrix();
   }
 }
