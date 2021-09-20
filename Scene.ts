@@ -9,11 +9,14 @@ export default class Scene {
     new StandardProgramWithObjects() 
   ];
 
+  skybox: Drawable;
+
   cameraPosition = [0,0,0];
   cameraPitch = 0;
   cameraYaw = 0;
 
   view: Float32Array = mat4.create();
+  cameraView: Float32Array = mat4.create();
   proj: Float32Array = mat4.create();
   projInverse: Float32Array = mat4.create();
 
@@ -30,12 +33,16 @@ export default class Scene {
     mat4.identity(this.view);
     mat4.rotateX(this.view, this.view, this.cameraPitch);
     mat4.rotateY(this.view, this.view, this.cameraYaw);
+    mat4.copy(this.cameraView, this.view);
     mat4.translate(this.view, this.view, [this.cameraPosition[0],this.cameraPosition[1],this.cameraPosition[2]]);
   }
 
   draw() {
     for (const ro of this.drawables)
       ro.draw(this.view, this.proj);
+
+    if (this.skybox)
+      this.skybox.draw(this.cameraView, this.proj);
   }
 
   addRenderObject(obj: RenderObject) {

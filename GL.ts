@@ -12,7 +12,10 @@ if (!gl)
   throw "webgl 2 not supported";
 
 gl.enable(gl.DEPTH_TEST);
-gl.depthFunc(gl.LESS);
+gl.depthFunc(gl.LEQUAL);
+
+gl.enable(gl.CULL_FACE);
+void gl.cullFace(gl.BACK);
 
 
 

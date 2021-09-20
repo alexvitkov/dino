@@ -5,6 +5,7 @@ import * as MainLoop from "./MainLoop";
 import RenderObject from "./RenderObject";
 import Scene from "./Scene";
 import MoveGizmo from "./MoveGizmo";
+import Skybox from "./Skybox";
 
 function frame() {
   if (Input.hasPointerLock) {
@@ -15,22 +16,34 @@ function frame() {
 }
 
 (async function () {
+  await Skybox.init();
+
+
   const monkeyMesh = await GLTF.load("/assets/monkey.gltf")
 
   Scene.current.cameraPosition[2] = -10;
   Scene.current.updateViewMatrix();
 
   const obj1 = new RenderObject(monkeyMesh);
-  const obj2 = new RenderObject(monkeyMesh);
-
   obj1.position = new Float32Array([-6,0,0]);
-  obj2.position = new Float32Array([6,0,0]);
   obj1.updateModelMatrix();
-  obj2.updateModelMatrix();
-
   Scene.current.addRenderObject(obj1);
+
+  const obj2 = new RenderObject(monkeyMesh);
+  obj2.position = new Float32Array([6,0,0]);
+  obj2.updateModelMatrix();
   Scene.current.addRenderObject(obj2);
+
   Scene.current.addDrawable(new MoveGizmo());
+
+  Scene.current.skybox = new Skybox(
+    "assets/negx.jpg",
+    "assets/posx.jpg",
+    "assets/negy.jpg",
+    "assets/posy.jpg",
+    "assets/negz.jpg",
+    "assets/posz.jpg"
+  );
   
   MainLoop.run(frame);
 })()

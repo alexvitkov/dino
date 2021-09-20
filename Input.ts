@@ -64,8 +64,7 @@ document.onmousemove = function (e: MouseEvent) {
   axes.mouseX.delta += e.movementX / canvas.width;
   axes.mouseY.delta += e.movementY / canvas.height;
 
-
-  Camera.screenToWorldPoint(mouseX, mouseY);
+  //Camera.screenToWorldPoint(mouseX, mouseY);
 }
 
 canvas.onmousedown = (e) => {
