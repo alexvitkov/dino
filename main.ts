@@ -19,7 +19,8 @@ function frame() {
   Scene.current.cameraPosition[2] = -10;
   Scene.current.updateViewMatrix();
 
-  Scene.current.addObject(new RenderObject(monkeyMesh));
+  //Scene.current.addRenderObject(new RenderObject(monkeyMesh));
+  Scene.current.addDrawable(new MoveGizmo());
   
   MainLoop.run(frame);
 })()

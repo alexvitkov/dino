@@ -1,7 +1,6 @@
 import RenderObject from "./RenderObject";
+import Drawable from "./Drawable";
 
-export interface ProgramWithObjects {
+export interface ProgramWithObjects extends Drawable {
   objects: RenderObject[];
-
-  draw(view: Float32Array, proj: Float32Array): void;
 }

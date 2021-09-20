@@ -1,10 +1,13 @@
-import { ProgramWithObjects } from "./program";
+import { ProgramWithObjects } from "./ProgramWithObjects";
 import { StandardProgramWithObjects } from "./StandardProgram";
 import RenderObject from "./RenderObject";
+import Drawable from "./Drawable";
 import * as mat4 from "./gl-matrix/mat4";
 
 export default class Scene {
-  programs: ProgramWithObjects[];
+  drawables: Drawable[] = [
+    new StandardProgramWithObjects() 
+  ];
 
   cameraPosition = [0,0,0];
   cameraPitch = 0;
@@ -16,8 +19,6 @@ export default class Scene {
   static current = new Scene();
 
   constructor() {
-    this.programs = [ new StandardProgramWithObjects() ];
-
     mat4.perspective(this.proj, 1.074, 16/9, 0.1, 500);
     this.updateViewMatrix();
   }
@@ -30,11 +31,15 @@ export default class Scene {
   }
 
   draw() {
-    for (const program of this.programs)
-      program.draw(this.view, this.proj);
+    for (const ro of this.drawables)
+      ro.draw(this.view, this.proj);
   }
 
-  addObject(obj: RenderObject) {
-    this.programs[0].objects.push(obj);
+  addRenderObject(obj: RenderObject) {
+    (this.drawables[0] as ProgramWithObjects).objects.push(obj);
+  }
+
+  addDrawable(obj: Drawable) {
+    this.drawables.push(obj);
   }
 }
