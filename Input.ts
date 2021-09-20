@@ -1,4 +1,4 @@
-import { canvas } from "./gl";
+import { canvas } from "./GL";
 
 export const pressed: {[key: string]: boolean} = {};
 export var hasPointerLock = false;

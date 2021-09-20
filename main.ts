@@ -1,15 +1,15 @@
-import * as gl from "./gl";
-import * as gltf from "./gltf";
-import * as scene from "./scene";
-import * as input from "./input";
+import * as GL from "./GL";
+import * as GLTF from "./GLTF";
+import * as Input from "./Input";
 import * as StandardProgram from "./StandardProgram";
-import * as cameraMovement from "./cameraMovement";
+import * as CameraMovement from "./CameraMovement";
 import RenderObject from "./RenderObject";
+import Scene from "./Scene";
 
 
-var the_scene: scene.Scene;
-var the_monkey: RenderObject;
-var monkeyMesh: gltf.Mesh;
+var theScene: Scene;
+var theMonkey: RenderObject;
+var monkeyMesh: GLTF.Mesh;
 
 
 let currentFrame = 0;
@@ -18,16 +18,16 @@ let lastTime = -1/30;
 let time: number;
 
 async function main() {
-  gl.init();
+  GL.init();
   StandardProgram.init();
-  monkeyMesh = await gltf.load("/assets/monkey.gltf")
-  the_scene = new scene.Scene();
-  the_scene.cameraPosition[2] = -10;
+  monkeyMesh = await GLTF.load("/assets/monkey.gltf")
+  theScene = new Scene();
+  theScene.cameraPosition[2] = -10;
 
-  the_monkey = new RenderObject();
-  the_monkey.mesh = monkeyMesh;
+  theMonkey = new RenderObject();
+  theMonkey.mesh = monkeyMesh;
 
-  the_scene.addObject(the_monkey);
+  theScene.addObject(theMonkey);
   
   engineFrame();
 }
@@ -35,13 +35,13 @@ async function main() {
 
 function frame() {
 
-  if (input.hasPointerLock) {
-    cameraMovement.mouseLookStep(the_scene, dt);
-    cameraMovement.cameraFlyStep(the_scene, dt);
+  if (Input.hasPointerLock) {
+    CameraMovement.mouseLookStep(theScene, dt);
+    CameraMovement.cameraFlyStep(theScene, dt);
   }
 
-  the_scene.updateViewMatrix();
-  the_monkey.updateModelMatrix();
+  theScene.updateViewMatrix();
+  theMonkey.updateModelMatrix();
 }
 
 
@@ -51,18 +51,18 @@ function engineFrame() {
   dt = (time - lastTime) / 1000;
   lastTime = time;
 
-  gl.gl.clearColor(0,0,0,1);
-  gl.gl.clear(gl.gl.DEPTH_BUFFER_BIT | gl.gl.COLOR_BUFFER_BIT);
+  GL.gl.clearColor(0,0,0,1);
+  GL.gl.clear(GL.gl.DEPTH_BUFFER_BIT | GL.gl.COLOR_BUFFER_BIT);
 
 
   frame();
 
-  the_scene.draw();
+  theScene.draw();
 
   currentFrame++;
 
-  input.axes.mouseX.delta = 0;
-  input.axes.mouseY.delta = 0;
+  Input.axes.mouseX.delta = 0;
+  Input.axes.mouseY.delta = 0;
 
   window.requestAnimationFrame(engineFrame);
 }

@@ -1,4 +1,5 @@
-import { gl, compileShader, linkProgram } from "./gl";
+import { gl, compileShader, linkProgram } from "./GL";
+import { ProgramWithObjects } from "./ProgramWithObjects";
 import RenderObject from "./RenderObject";
 
 var program: WebGLProgram;
@@ -41,7 +42,7 @@ void main() {
 }
 
 
-export class StandardProgramWithObjects {
+export class StandardProgramWithObjects implements ProgramWithObjects {
   objects: RenderObject[] = [];
 
   draw(view: Float32Array, proj: Float32Array) {

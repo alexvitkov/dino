@@ -1,4 +1,4 @@
-import { gl } from "./gl";
+import { gl } from "./GL";
 
 
 // Those interfaces describe a GLTF mesh

@@ -1,6 +1,6 @@
-import * as input from "./input";
+import * as Input from "./Input";
 import * as vec3 from "./gl-matrix/vec3";
-import { Scene } from "./scene";
+import { Scene } from "./Scene";
 
 
 let flySpeed = 5;
@@ -10,15 +10,15 @@ let sensitivityY = 100;
 
 
 export function mouseLookStep(the_scene: Scene, dt) {
-  the_scene.cameraYaw += dt * input.axes.mouseX.value() * sensitivityX;
-  the_scene.cameraPitch += dt * input.axes.mouseY.value() * sensitivityY;
+  the_scene.cameraYaw += dt * Input.axes.mouseX.value() * sensitivityX;
+  the_scene.cameraPitch += dt * Input.axes.mouseY.value() * sensitivityY;
 }
 
 
 export function cameraFlyStep(the_scene: Scene, dt) {
 
-  let h = -input.axes.horizontal.value();
-  let v = input.axes.vertical.value();
+  let h = -Input.axes.horizontal.value();
+  let v = Input.axes.vertical.value();
 
   let sinh = Math.sin(the_scene.cameraYaw);
   let cosh = Math.cos(the_scene.cameraYaw);

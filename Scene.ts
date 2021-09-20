@@ -3,7 +3,7 @@ import { StandardProgramWithObjects } from "./StandardProgram";
 import RenderObject from "./RenderObject";
 import * as mat4 from "./gl-matrix/mat4";
 
-export class Scene {
+export default class Scene {
   programs: ProgramWithObjects[];
 
   cameraPosition = [0,0,0];
