@@ -13,6 +13,8 @@ export default class Scene {
   view: Float32Array = mat4.create();
   proj: Float32Array = mat4.create();
 
+  static current = new Scene();
+
   constructor() {
     this.programs = [ new StandardProgramWithObjects() ];
 

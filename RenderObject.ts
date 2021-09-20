@@ -1,4 +1,4 @@
-import { Mesh } from "./gltf";
+import { Mesh } from "./GLTF";
 import * as mat4 from "./gl-matrix/mat4";
 
 export default class RenderObject {
