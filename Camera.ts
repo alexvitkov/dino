@@ -9,10 +9,20 @@ let flySpeed = 5;
 let sensitivityX = 100;
 let sensitivityY = 100;
 
+const minPitch = -90 * (Math.PI / 180);
+const maxPitch =  90 * (Math.PI / 180);
+
 
 export function mouseLookStep(the_scene: Scene) {
   the_scene.cameraYaw += Time.deltaTime * Input.axes.mouseX.value() * sensitivityX;
   the_scene.cameraPitch += Time.deltaTime * Input.axes.mouseY.value() * sensitivityY;
+
+  if (the_scene.cameraPitch < minPitch)
+    the_scene.cameraPitch = minPitch;
+
+  if (the_scene.cameraPitch > maxPitch)
+    the_scene.cameraPitch = maxPitch;
+
 }
 
 
