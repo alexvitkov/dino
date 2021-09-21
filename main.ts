@@ -31,7 +31,7 @@ function frame() {
   // Scene.current.addRenderObject(monkeyObj);
 
 
-  Scene.current.addDrawable(new Terrain("assets/heightmap.png", 100, 20));
+  Scene.current.addDrawable(new Terrain("assets/heightmap.png", "assets/grass.jpg", 200, 20));
 
 
   Scene.current.skybox = new Skybox(

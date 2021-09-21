@@ -1,5 +1,6 @@
 import { gl, compileShader, linkProgram } from "./GL";
 import Drawable from "./Drawable";
+import * as Texture from "./Texture";
 
 const terrainMeshes: {[key: number]: TerrainMesh } = {};
 
@@ -8,15 +9,18 @@ const vert = compileShader(gl.VERTEX_SHADER, `#version 300 es
 layout (location = 0) in vec2 position;
 
 uniform sampler2D heightmap;
+uniform sampler2D tex;
 uniform vec2 scale;
 
 uniform mat4 view;
 uniform mat4 proj;
 
+out vec2 _position;
 out float y;
 
 void main() {
     y = texture(heightmap, position).r;
+    _position = vec2(position.x, position.y); 
     gl_Position = proj * view * vec4(scale.x * position.x, scale.y * y, scale.x * position.y, 1);
 }
 `);
@@ -24,11 +28,16 @@ void main() {
 const frag = compileShader(gl.FRAGMENT_SHADER, `#version 300 es 
 precision highp float;
 
+uniform sampler2D heightmap;
+uniform sampler2D tex;
+
 in float y;
+in vec2 _position;
+
 out vec4 out_color;
 
 void main() {
-    out_color = vec4(y,y,y,1);
+    out_color = texture(tex, _position * 20.0) * vec4(y, y,y,1); 
 }
 `);
 
@@ -37,6 +46,7 @@ const program = linkProgram(vert, frag);
 const viewMatrixLocation = gl.getUniformLocation(program, 'view');
 const projMatrixLocation = gl.getUniformLocation(program, 'proj');
 const heightmapLocation = gl.getUniformLocation(program, 'heightmap');
+const textureLocation = gl.getUniformLocation(program, 'tex');
 const scaleLocation = gl.getUniformLocation(program, 'scale');
 
 export function getTerrainMesh(resolution: number): TerrainMesh {
@@ -98,12 +108,14 @@ export class TerrainMesh {
 export default class Terrain implements Drawable {
 
   heightmap: WebGLTexture;
+  texture: WebGLTexture;
   terrainMesh: TerrainMesh;
   ready = false;
 
-  constructor(heightmapPath: string, public resolution: number, public height: number) {
+  constructor(heightmapPath: string, texturePath: string, public resolution: number, public height: number) {
     this.terrainMesh = getTerrainMesh(resolution);
     this.heightmap = gl.createTexture();
+    this.texture = Texture.load(texturePath);
     let that = this;
 
     const img = new Image();
@@ -131,6 +143,10 @@ export default class Terrain implements Drawable {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.heightmap);
     gl.uniform1i(heightmapLocation, 0);
+
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.uniform1i(textureLocation, 1);
 
     this.terrainMesh.draw();
   }
