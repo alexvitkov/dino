@@ -64,7 +64,6 @@ export default class MoveGizmo implements Drawable {
 
   draw(view, proj) {
     gl.useProgram(program);
-    gl.lineWidth(10);
 
     gl.bindVertexArray(vao);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indices);

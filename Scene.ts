@@ -2,6 +2,7 @@ import { ProgramWithObjects } from "./ProgramWithObjects";
 import { StandardProgramWithObjects } from "./StandardProgram";
 import RenderObject from "./RenderObject";
 import Drawable from "./Drawable";
+import Skybox from "./Skybox";
 import * as mat4 from "./gl-matrix/mat4";
 
 export default class Scene {
@@ -9,7 +10,7 @@ export default class Scene {
     new StandardProgramWithObjects() 
   ];
 
-  skybox: Drawable;
+  skybox: Skybox;
 
   cameraPosition = [0,0,0];
   cameraPitch = 0;
@@ -34,12 +35,12 @@ export default class Scene {
     mat4.rotateX(this.view, this.view, this.cameraPitch);
     mat4.rotateY(this.view, this.view, this.cameraYaw);
     mat4.copy(this.cameraView, this.view);
-    mat4.translate(this.view, this.view, [this.cameraPosition[0],this.cameraPosition[1],this.cameraPosition[2]]);
+    mat4.translate(this.view, this.view, [-this.cameraPosition[0], -this.cameraPosition[1], -this.cameraPosition[2]]);
   }
 
   draw() {
     for (const ro of this.drawables)
-      ro.draw(this.view, this.proj);
+      ro.draw(this.view, this.proj, this.skybox.cubemap);
 
     if (this.skybox)
       this.skybox.draw(this.cameraView, this.proj);

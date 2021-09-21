@@ -27,7 +27,6 @@ export function mouseLookStep(the_scene: Scene) {
 
 
 export function cameraFlyStep(the_scene: Scene) {
-
   let h = -Input.axes.horizontal.value();
   let v = Input.axes.vertical.value();
 
@@ -37,9 +36,9 @@ export function cameraFlyStep(the_scene: Scene) {
   let cosv = Math.cos(the_scene.cameraPitch);
 
   let vec = [
-    (cosh * h - sinh * v) * cosv,
-    v * sinv,
-    (sinh * h + cosh * v) * cosv,
+    -(cosh * h - sinh * v) * cosv,
+    -v * sinv,
+    -(sinh * h + cosh * v) * cosv,
   ];
 
   let len = vec3.length(vec);

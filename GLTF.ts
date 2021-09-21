@@ -118,7 +118,7 @@ function loadPrimitive(gltf: GLTFJson, primitive: GLTFPrimitive): Mesh {
   gl.bindVertexArray(mesh.vao);
 
   mesh.positions = uploadAttibuteBuffer(gltf, gl.ARRAY_BUFFER, 0, primitive.attributes.POSITION);
-  mesh.normals = uploadAttibuteBuffer(gltf, gl.ARRAY_BUFFER, 1, primitive.attributes.POSITION);
+  mesh.normals = uploadAttibuteBuffer(gltf, gl.ARRAY_BUFFER, 1, primitive.attributes.NORMAL);
   mesh.indices = uploadBuffer(gltf, gl.ELEMENT_ARRAY_BUFFER, primitive.indices);
 
   mesh.numIndices = gltf.accessors[primitive.indices].count;

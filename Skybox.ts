@@ -2,9 +2,7 @@ import Drawable from "./Drawable";
 import * as GLTF from "./GLTF";
 import { gl, compileShader, linkProgram } from "./GL";
 
-var mesh: GLTF.Mesh;
-
-
+var skyboxCubeMesh: GLTF.Mesh;
 
 const vert = compileShader(gl.VERTEX_SHADER, `#version 300 es
 uniform mat4 view;
@@ -50,11 +48,10 @@ function loadImage(bindpoint: GLenum, path: string, onload, pixel): HTMLImageEle
 
 
 export default class Skybox implements Drawable {
-
   cubemap: WebGLTexture;
 
   static async init() {
-    mesh = await GLTF.load("assets/skybox.gltf");
+    skyboxCubeMesh = await GLTF.load("assets/skybox.gltf");
   }
 
   constructor(negx: string, posx: string, negy: string, posy: string, negz: string, posz: string) {
@@ -82,16 +79,17 @@ export default class Skybox implements Drawable {
       }
     }
 
-    const img_negx = loadImage(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, negx, onload, [255, 0, 0, 255]);
-    const img_posx = loadImage(gl.TEXTURE_CUBE_MAP_POSITIVE_X, posx, onload, [0, 255, 0, 255]);
-    const img_negy = loadImage(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, negy, onload, [0, 0, 255, 255]);
-    const img_posy = loadImage(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, posy, onload, [255, 255, 0, 255]);
-    const img_negz = loadImage(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, negz, onload, [0, 255, 255, 255]);
-    const img_posz = loadImage(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, posz, onload, [255, 0, 255, 255]);
+    const pixel = [46, 133, 201, 255];
+    const img_negx = loadImage(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, negx, onload, pixel);
+    const img_posx = loadImage(gl.TEXTURE_CUBE_MAP_POSITIVE_X, posx, onload, pixel);
+    const img_negy = loadImage(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, negy, onload, pixel);
+    const img_posy = loadImage(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, posy, onload, pixel);
+    const img_negz = loadImage(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, negz, onload, pixel);
+    const img_posz = loadImage(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, posz, onload, pixel);
   }
 
   draw(view: any, proj: any): void {
-    if (!mesh)
+    if (!skyboxCubeMesh)
       return;
 
     gl.useProgram(program);
@@ -100,8 +98,8 @@ export default class Skybox implements Drawable {
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.cubemap);
     gl.uniform1i(cubeLocation, 0);
 
-    gl.bindVertexArray(mesh.vao);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indices);
+    gl.bindVertexArray(skyboxCubeMesh.vao);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, skyboxCubeMesh.indices);
 
     gl.uniformMatrix4fv(projMatrixLocation, false, proj);
     gl.uniformMatrix4fv(viewMatrixLocation, false, view);
