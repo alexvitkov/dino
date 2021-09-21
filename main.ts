@@ -5,6 +5,7 @@ import * as MainLoop from "./MainLoop";
 import RenderObject from "./RenderObject";
 import Scene from "./Scene";
 import Skybox from "./Skybox";
+import Terrain from "./Terrain";
 
 
 function frame() {
@@ -19,16 +20,19 @@ function frame() {
   await Skybox.init();
 
 
-  const monkeyMesh = await GLTF.load("/assets/cube.gltf")
-
-  Scene.current.cameraPosition[1] = 0;
-  Scene.current.cameraPosition[2] = 5;
+  Scene.current.cameraPosition[1] = 10;
+  Scene.current.cameraPosition[2] = 0;
   Scene.current.updateViewMatrix();
 
-  const obj1 = new RenderObject(monkeyMesh);
-  obj1.position = new Float32Array([0, 0, 0]);
-  obj1.updateModelMatrix();
-  Scene.current.addRenderObject(obj1);
+  // const monkeyMesh = await GLTF.load("/assets/cube.gltf")
+  // const monkeyObj = new RenderObject(monkeyMesh);
+  // monkeyObj.position = new Float32Array([0, 0, 0]);
+  // monkeyObj.updateModelMatrix();
+  // Scene.current.addRenderObject(monkeyObj);
+
+
+  Scene.current.addDrawable(new Terrain("assets/heightmap.png", 100, 20));
+
 
   Scene.current.skybox = new Skybox(
     "assets/negx.jpg",
