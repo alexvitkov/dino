@@ -24,14 +24,14 @@ function frame() {
   Scene.current.cameraPosition[2] = 0;
   Scene.current.updateViewMatrix();
 
-  // const monkeyMesh = await GLTF.load("/assets/cube.gltf")
-  // const monkeyObj = new RenderObject(monkeyMesh);
-  // monkeyObj.position = new Float32Array([0, 0, 0]);
-  // monkeyObj.updateModelMatrix();
-  // Scene.current.addRenderObject(monkeyObj);
+  const monkeyMesh = await GLTF.load("/assets/smoothcube.gltf")
+  const monkeyObj = new RenderObject(monkeyMesh);
+  monkeyObj.position = new Float32Array([0, 0, 0]);
+  monkeyObj.updateModelMatrix();
+  Scene.current.addRenderObject(monkeyObj);
 
 
-  Scene.current.addDrawable(new Terrain("assets/heightmap.png", "assets/grass.jpg", 200, 20));
+  // Scene.current.addDrawable(new Terrain("assets/heightmap.png", "assets/grass.jpg", 200, 30));
 
 
   Scene.current.skybox = new Skybox(
