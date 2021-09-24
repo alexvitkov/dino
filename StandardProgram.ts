@@ -32,12 +32,14 @@ precision highp float;
 uniform samplerCube reflection;
 uniform vec3 cameraPosition;
 uniform sampler2D shadowmap;
-uniform float shadowStrength;
 uniform mat4 sun;
 
 in vec3 Position;
 in vec3 N;
 in float PreShadowIntensity;
+
+uniform vec4 sunlightColor;
+uniform vec4 shadowColor;
 
 out highp vec4 out_color;
 
@@ -47,18 +49,20 @@ void main() {
     // vec3 R = reflect(I, N);
     // out_color = vec4(texture(reflection, R).rgb, 1.0);
 ` + ShaderSnippet.shadow + `
-    out_color = vec4(vec3(1,1,1) * intensity, 1);
+    vec4 diffuse = vec4(1,1,1,1);
+` + ShaderSnippet.blend + `
 }`);
 
 const program = linkProgram(vert, frag);
 const modelMatrixLocation = gl.getUniformLocation(program, 'model');
 const viewprojMatrixLocation = gl.getUniformLocation(program, 'viewproj');
 const sunMatrixLocation = gl.getUniformLocation(program, 'sun');
-const shadowStrengthLocation = gl.getUniformLocation(program, 'shadowStrength');
 const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
 const sundirLocation = gl.getUniformLocation(program, 'sundir');
 const reflectionCubemapLocation = gl.getUniformLocation(program, 'reflection');
 const shadowmapLocation = gl.getUniformLocation(program, 'shadowmap');
+const sunlightColorLocation = gl.getUniformLocation(program, 'sunlightColor');
+const shadowColorLocation = gl.getUniformLocation(program, 'shadowColor');
 
 
 
@@ -107,12 +111,14 @@ export class StandardProgramWithObjects implements ProgramWithObjects {
     gl.uniformMatrix4fv(sunMatrixLocation, false, Scene.current.sunMatrix);
 
     gl.uniform3fv(cameraPositionLocation, Scene.current.cameraPosition);
-    gl.uniform1f(shadowStrengthLocation, 1.0 - Scene.current.shadowIntensity);
     gl.uniform3fv(sundirLocation, sundir);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, skybox);
     gl.uniform1i(reflectionCubemapLocation, 0);
+
+    gl.uniform4fv(sunlightColorLocation, Scene.current.sunColor);
+    gl.uniform4fv(shadowColorLocation, Scene.current.sunShadow);
 
     gl.activeTexture(gl.TEXTURE2);
     gl.bindTexture(gl.TEXTURE_2D, shadow_depth_texture);

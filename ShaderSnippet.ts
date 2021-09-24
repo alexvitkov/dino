@@ -13,6 +13,11 @@ export const shadow = `
         
         float zz = uvpos.z - other_z;
         if (zz > 0.01)
-            intensity *= shadowStrength;
+            intensity *= shadowColor.w;
     }
+`;
+
+
+export const blend = `
+    out_color = (intensity * diffuse + (1.0 - intensity) * diffuse * vec4(shadowColor.xyz, 1)) * vec4(sunlightColor.xyz, 1) * sunlightColor.w;
 `;

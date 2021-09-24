@@ -12,13 +12,13 @@ body {
     padding: 3px;
     background: #e0e0e0;
     border-right: 1px solid #ccc;
-    flex: 0 0 360px;
+    flex: 0 0 450px;
 
     overflow-y: scroll;
     min-height: 0;
 
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 40% 60%;
     grid-auto-rows: min-content;
 
     gap: 3px 0;

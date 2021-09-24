@@ -25,7 +25,6 @@ export default class Scene {
   sunlightDirection = new Float32Array(3);
   sunlightPitch = 0;
   sunlightYaw = 0;
-  shadowIntensity = 0.25;
 
   // view/projection matrices
   view: Float32Array = mat4.create();
@@ -34,6 +33,9 @@ export default class Scene {
   viewproj: Float32Array = mat4.create();
   projInverse: Float32Array = mat4.create();
   sunMatrix: Float32Array = mat4.create();
+
+  sunColor = [1.1, 1.05, 1, 1];
+  sunShadow = [.3, .33, .36, .66];
 
   static current = new Scene();
 
@@ -45,13 +47,13 @@ export default class Scene {
     this.setSunlightDirection(-0.630, -2.694);
 
 
-    Inspector.bind2("Camera Angle", (p) => {
+    Inspector.bind("Camera Angle", 2, (p) => {
       this.cameraPitch = p[0];
       this.cameraYaw = p[1];
       this.updateViewMatrix();
     }, () => [this.cameraPitch, this.cameraYaw]);
 
-    Inspector.bind3("Camera Position", (p) => {
+    Inspector.bind("Camera Position", 3, (p) => {
       this.cameraPosition[0] = p[0];
       this.cameraPosition[1] = p[1];
       this.cameraPosition[2] = p[2];
@@ -60,11 +62,25 @@ export default class Scene {
 
     Inspector.separator();
 
-    Inspector.bind2("Sun Angle", (p) => {
+    Inspector.bind("Sun Angle", 2, (p) => {
       this.setSunlightDirection(p[0], p[1]);
     }, () => [this.sunlightPitch, this.sunlightYaw]);
 
-    Inspector.bind1("Shadow Intensity", (n) => this.shadowIntensity = n, this.shadowIntensity);
+    Inspector.bind("Sun Color", 4, (p) => {
+      this.sunColor[0] = p[0];
+      this.sunColor[1] = p[1];
+      this.sunColor[2] = p[2];
+      this.sunColor[3] = p[3];
+      this.updateViewMatrix();
+    }, () => this.sunColor);
+
+    Inspector.bind("Shadow Color", 4, (p) => {
+      this.sunShadow[0] = p[0];
+      this.sunShadow[1] = p[1];
+      this.sunShadow[2] = p[2];
+      this.sunShadow[3] = p[3];
+      this.updateViewMatrix();
+    }, () => this.sunShadow);
   }
 
   updateViewMatrix() {
@@ -98,7 +114,7 @@ export default class Scene {
   }
 
   updateSunMatrix() {
-    const size = 10;
+    const size = 20;
     const offset = size * 0.7;
 
     mat4.ortho(this.sunMatrix, -size, size, -10, 10, -size, size);
@@ -153,3 +169,5 @@ export default class Scene {
     this.drawables.push(obj);
   }
 }
+
+window['scene'] = Scene.current;

@@ -50,7 +50,8 @@ uniform mat4 sun;
 uniform sampler2D heightmap;
 uniform sampler2D shadowmap;
 uniform sampler2D tex;
-uniform float shadowStrength;
+uniform vec4 sunlightColor;
+uniform vec4 shadowColor;
 
 in vec3 Position;
 in vec3 N;
@@ -60,10 +61,9 @@ out vec4 out_color;
 
 void main() {`
   + ShaderSnippet.shadow +
-  ` vec4 diffuse = texture(tex, Position.xz);
-    out_color = intensity * diffuse;
-}
-`);
+  ` vec4 diffuse = texture(tex, Position.xz);`
+  + ShaderSnippet.blend +
+`}`);
 
 const program = linkProgram(vert, frag);
 
@@ -74,7 +74,8 @@ const shadowmapLocation = gl.getUniformLocation(program, 'shadowmap');
 const textureLocation = gl.getUniformLocation(program, 'tex');
 const scaleLocation = gl.getUniformLocation(program, 'scale');
 const sundirLocation = gl.getUniformLocation(program, 'sundir');
-const shadowStrengthLocation = gl.getUniformLocation(program, 'shadowStrength');
+const sunlightColorLocation = gl.getUniformLocation(program, 'sunlightColor');
+const shadowColorLocation = gl.getUniformLocation(program, 'shadowColor');
 
 
 
@@ -210,9 +211,11 @@ export default class Terrain implements Drawable {
 
     gl.uniformMatrix4fv(viewprojMatrixLocation, false, viewproj);
     gl.uniformMatrix4fv(sunMatrixLocation, false, Scene.current.sunMatrix);
-    gl.uniform1f(shadowStrengthLocation, 1.0 - Scene.current.shadowIntensity);
     gl.uniform2f(scaleLocation, this.resolution, this.height);
     gl.uniform3fv(sundirLocation, sundir);
+
+    gl.uniform4fv(sunlightColorLocation, Scene.current.sunColor);
+    gl.uniform4fv(shadowColorLocation, Scene.current.sunShadow);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.heightmap);
