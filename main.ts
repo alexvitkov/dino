@@ -19,8 +19,7 @@ function frame() {
 (async function () {
   await Skybox.init();
 
-
-  Scene.current.cameraPosition[1] = 10;
+  Scene.current.cameraPosition[1] = 25;
   Scene.current.cameraPosition[2] = 0;
   Scene.current.updateViewMatrix();
 
@@ -31,7 +30,7 @@ function frame() {
   Scene.current.addRenderObject(monkeyObj);
 
 
-  // Scene.current.addDrawable(new Terrain("assets/heightmap.png", "assets/grass.jpg", 200, 30));
+  Scene.current.addDrawable(new Terrain("assets/heightmap2.png", "assets/grass.jpg", 200, 10));
 
 
   Scene.current.skybox = new Skybox(

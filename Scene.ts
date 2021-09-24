@@ -4,6 +4,7 @@ import RenderObject from "./RenderObject";
 import Drawable from "./Drawable";
 import Skybox from "./Skybox";
 import * as mat4 from "./gl-matrix/mat4";
+import * as Inspector from "./Inspector";
 
 export default class Scene {
   drawables: Drawable[] = [
@@ -12,10 +13,17 @@ export default class Scene {
 
   skybox: Skybox;
 
+  // Camera Transform
   cameraPosition = [0,0,0];
   cameraPitch = 0;
   cameraYaw = 0;
 
+  // Sunlight
+  sunlightDirection = new Float32Array(3);
+  sunlightPitch = 0;
+  sunlightYaw = 0;
+
+  // view/projection matrices
   view: Float32Array = mat4.create();
   cameraView: Float32Array = mat4.create();
   proj: Float32Array = mat4.create();
@@ -36,6 +44,20 @@ export default class Scene {
     mat4.rotateY(this.view, this.view, this.cameraYaw);
     mat4.copy(this.cameraView, this.view);
     mat4.translate(this.view, this.view, [-this.cameraPosition[0], -this.cameraPosition[1], -this.cameraPosition[2]]);
+
+
+    Inspector.set("Camera Position", this.cameraPosition);
+    Inspector.set("Camera Pitch", this.cameraPitch * 180/Math.PI);
+    Inspector.set("Camera Yaw", this.cameraYaw * 180/Math.PI);
+  }
+
+  setSunlightDirection(pitch: number, yaw: number) {
+    this.sunlightPitch = pitch;
+    this.sunlightYaw = yaw;
+
+    // this.sunlightDirection[0] = Math.cos(pitch);
+    // this.sunlightDirection[1] = Math.cos(pitch);
+    // this.sunlightDirection[2] = Math.sin(pitch);
   }
 
   draw() {

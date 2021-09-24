@@ -22,7 +22,6 @@ export function mouseLookStep(the_scene: Scene) {
 
   if (the_scene.cameraPitch > maxPitch)
     the_scene.cameraPitch = maxPitch;
-
 }
 
 
