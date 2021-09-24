@@ -2,6 +2,7 @@ import { gl, compileShader, linkProgram, shadow_depth_texture } from "./GL";
 import Drawable from "./Drawable";
 import Scene from "./Scene";
 import * as Texture from "./Texture";
+import * as ShaderSnippet from "./ShaderSnippet";
 
 
 const terrainMeshes: {[key: number]: TerrainMesh } = {};
@@ -19,7 +20,7 @@ uniform vec3 sundir;
 out vec3 Position;
 out float y;
 out vec3 N;
-out float intensity;
+out float PreShadowIntensity;
 
 void main() {
 
@@ -38,7 +39,7 @@ void main() {
     Position = scale.xyx * vec3(position.x, y, position.y); 
     gl_Position = viewproj * vec4(Position, 1);
 
-    intensity = dot(N, sundir) / 2.0 + 0.5;
+    PreShadowIntensity = dot(N, sundir) / 2.0 + 0.5;
 }
 `);
 
@@ -52,30 +53,14 @@ uniform sampler2D tex;
 
 in vec3 Position;
 in vec3 N;
-in float intensity;
+in float PreShadowIntensity;
 
 out vec4 out_color;
 
-void main() {
-    float intens = intensity;
-
-    vec3 uvpos = (sun * vec4(Position, 1)).xyz;
-    float dist = distance(uvpos.xyz, vec3(0,0,0));
-
-    uvpos = uvpos / 2.0 + vec3(.5, .5, .5);
-
-    if (dist < 1.0) {
-        
-        float other_z = texture(shadowmap, uvpos.xy).r;
-        
-        float zz = uvpos.z - other_z;
-        if (zz > 0.01)
-            intens *= 0.5;
-    }
-
-    vec4 diffuse = texture(tex, Position.xz);
-    out_color = intens * diffuse;
-
+void main() {`
+  + ShaderSnippet.shadow +
+  ` vec4 diffuse = texture(tex, Position.xz);
+    out_color = intensity * diffuse;
 }
 `);
 

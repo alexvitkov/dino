@@ -1,8 +1,9 @@
-import { gl, compileShader, linkProgram } from "./GL";
+import { gl, compileShader, linkProgram, shadow_depth_texture } from "./GL";
 import { ProgramWithObjects } from "./ProgramWithObjects";
 import Drawable from "./Drawable";
 import Scene from "./Scene";
 import RenderObject from "./RenderObject";
+import * as ShaderSnippet from "./ShaderSnippet";
 
 
 const vert = compileShader(gl.VERTEX_SHADER, `#version 300 es 
@@ -13,16 +14,16 @@ uniform vec3 sundir;
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 
-out vec3 P;
+out vec3 Position;
 out vec3 N;
-out float intensity;
+out float PreShadowIntensity;
 
 void main() {
     gl_Position = viewproj * model * vec4(position, 1);
 
-    P = vec3(model * vec4(position, 1));
+    Position = vec3(model * vec4(position, 1));
     N = mat3(transpose(inverse(model))) * normal;
-    intensity = dot(N, sundir) / 2.0 + 0.5;
+    PreShadowIntensity = dot(N, sundir) / 2.0 + 0.5;
 }
 `);
 
@@ -30,28 +31,32 @@ const frag = compileShader(gl.FRAGMENT_SHADER, `#version 300 es
 precision highp float;
 uniform samplerCube reflection;
 uniform vec3 cameraPosition;
+uniform sampler2D shadowmap;
+uniform mat4 sun;
 
-in vec3 P;
+in vec3 Position;
 in vec3 N;
-in float intensity;
+in float PreShadowIntensity;
 
 out highp vec4 out_color;
 
 void main() {
     // vec3 C = cameraPosition;
-    // vec3 I = P - C;
+    // vec3 I = Position - C;
     // vec3 R = reflect(I, N);
     // out_color = vec4(texture(reflection, R).rgb, 1.0);
-
+` + ShaderSnippet.shadow + `
     out_color = vec4(vec3(1,1,1) * intensity, 1);
 }`);
 
 const program = linkProgram(vert, frag);
 const modelMatrixLocation = gl.getUniformLocation(program, 'model');
 const viewprojMatrixLocation = gl.getUniformLocation(program, 'viewproj');
+const sunMatrixLocation = gl.getUniformLocation(program, 'sun');
 const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
 const sundirLocation = gl.getUniformLocation(program, 'sundir');
 const reflectionCubemapLocation = gl.getUniformLocation(program, 'reflection');
+const shadowmapLocation = gl.getUniformLocation(program, 'shadowmap');
 
 
 
@@ -97,6 +102,7 @@ export class StandardProgramWithObjects implements ProgramWithObjects {
     gl.useProgram(program);
 
     gl.uniformMatrix4fv(viewprojMatrixLocation, false, viewproj);
+    gl.uniformMatrix4fv(sunMatrixLocation, false, Scene.current.sunMatrix);
 
     gl.uniform3fv(cameraPositionLocation, Scene.current.cameraPosition);
     gl.uniform3fv(sundirLocation, sundir);
@@ -104,6 +110,10 @@ export class StandardProgramWithObjects implements ProgramWithObjects {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, skybox);
     gl.uniform1i(reflectionCubemapLocation, 0);
+
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, shadow_depth_texture);
+    gl.uniform1i(shadowmapLocation, 2);
 
     for (const obj of this.objects) {
       gl.bindVertexArray(obj.mesh.vao);
