@@ -9,6 +9,7 @@ body {
 }
 
 #inspector {
+    padding: 3px;
     background: #e0e0e0;
     border-right: 1px solid #ccc;
     flex: 0 0 400px;
@@ -20,11 +21,22 @@ body {
     grid-template-columns: 40% 60%;
     grid-auto-rows: min-content;
 
+    gap: 3px 0;
+
     /*
 
     grid-auto-flow:dense;
     align-items:start;
 */
+}
+
+.inspector_hflex {
+    display: flex;
+    gap: 3px;
+}
+
+.inspector_hflex > input {
+    min-width: 0;
 }
 
 .center_content {

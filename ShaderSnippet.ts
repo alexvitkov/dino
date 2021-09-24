@@ -13,6 +13,6 @@ export const shadow = `
         
         float zz = uvpos.z - other_z;
         if (zz > 0.01)
-            intensity *= 0.5;
+            intensity *= shadowStrength;
     }
 `;

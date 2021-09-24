@@ -25,6 +25,7 @@ export default class Scene {
   sunlightDirection = new Float32Array(3);
   sunlightPitch = 0;
   sunlightYaw = 0;
+  shadowIntensity = 0.25;
 
   // view/projection matrices
   view: Float32Array = mat4.create();
@@ -41,6 +42,14 @@ export default class Scene {
     mat4.invert(this.projInverse, this.proj);
 
     this.updateViewMatrix();
+
+    Inspector.bind("Shadow Intensity", (n) => this.shadowIntensity = n, this.shadowIntensity);
+    Inspector.bind_v3("Camera Position", (p) => {
+      this.cameraPosition[0] = p[0];
+      this.cameraPosition[1] = p[1];
+      this.cameraPosition[2] = p[2];
+      this.updateViewMatrix();
+    }, () => this.cameraPosition);
   }
 
   updateViewMatrix() {
@@ -52,10 +61,10 @@ export default class Scene {
     mat4.copy(this.cameraView, this.view);
     mat4.translate(this.view, this.view, [-this.cameraPosition[0], -this.cameraPosition[1], -this.cameraPosition[2]]);
 
-    Inspector.set("Camera Position", this.cameraPosition);
     Inspector.set("Camera Pitch", this.cameraPitch * 180/Math.PI);
     Inspector.set("Camera Yaw", this.cameraYaw * 180/Math.PI);
 
+    Inspector.update("Camera Position");
     mat4.multiply(this.viewproj, this.proj, this.view);
     this.updateSunMatrix();
   }

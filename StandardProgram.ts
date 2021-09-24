@@ -32,6 +32,7 @@ precision highp float;
 uniform samplerCube reflection;
 uniform vec3 cameraPosition;
 uniform sampler2D shadowmap;
+uniform float shadowStrength;
 uniform mat4 sun;
 
 in vec3 Position;
@@ -53,6 +54,7 @@ const program = linkProgram(vert, frag);
 const modelMatrixLocation = gl.getUniformLocation(program, 'model');
 const viewprojMatrixLocation = gl.getUniformLocation(program, 'viewproj');
 const sunMatrixLocation = gl.getUniformLocation(program, 'sun');
+const shadowStrengthLocation = gl.getUniformLocation(program, 'shadowStrength');
 const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
 const sundirLocation = gl.getUniformLocation(program, 'sundir');
 const reflectionCubemapLocation = gl.getUniformLocation(program, 'reflection');
@@ -105,6 +107,7 @@ export class StandardProgramWithObjects implements ProgramWithObjects {
     gl.uniformMatrix4fv(sunMatrixLocation, false, Scene.current.sunMatrix);
 
     gl.uniform3fv(cameraPositionLocation, Scene.current.cameraPosition);
+    gl.uniform1f(shadowStrengthLocation, 1.0 - Scene.current.shadowIntensity);
     gl.uniform3fv(sundirLocation, sundir);
 
     gl.activeTexture(gl.TEXTURE0);

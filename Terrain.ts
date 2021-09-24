@@ -50,6 +50,7 @@ uniform mat4 sun;
 uniform sampler2D heightmap;
 uniform sampler2D shadowmap;
 uniform sampler2D tex;
+uniform float shadowStrength;
 
 in vec3 Position;
 in vec3 N;
@@ -73,6 +74,7 @@ const shadowmapLocation = gl.getUniformLocation(program, 'shadowmap');
 const textureLocation = gl.getUniformLocation(program, 'tex');
 const scaleLocation = gl.getUniformLocation(program, 'scale');
 const sundirLocation = gl.getUniformLocation(program, 'sundir');
+const shadowStrengthLocation = gl.getUniformLocation(program, 'shadowStrength');
 
 
 
@@ -208,6 +210,7 @@ export default class Terrain implements Drawable {
 
     gl.uniformMatrix4fv(viewprojMatrixLocation, false, viewproj);
     gl.uniformMatrix4fv(sunMatrixLocation, false, Scene.current.sunMatrix);
+    gl.uniform1f(shadowStrengthLocation, 1.0 - Scene.current.shadowIntensity);
     gl.uniform2f(scaleLocation, this.resolution, this.height);
     gl.uniform3fv(sundirLocation, sundir);
 
