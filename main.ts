@@ -30,8 +30,6 @@ function frame() {
   Scene.current.cameraPosition[2] = 0;
   Scene.current.updateViewMatrix();
 
-  Scene.current.setSunlightDirection(0,0);
-
   const monkeyMesh = await GLTF.load("/assets/monkey.gltf")
   const monkeyObj = new RenderObject(monkeyMesh);
   monkeyObj.position = new Float32Array([5, 11, 5]);

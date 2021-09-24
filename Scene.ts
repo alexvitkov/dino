@@ -42,14 +42,29 @@ export default class Scene {
     mat4.invert(this.projInverse, this.proj);
 
     this.updateViewMatrix();
+    this.setSunlightDirection(-0.630, -2.694);
 
-    Inspector.bind("Shadow Intensity", (n) => this.shadowIntensity = n, this.shadowIntensity);
-    Inspector.bind_v3("Camera Position", (p) => {
+
+    Inspector.bind2("Camera Angle", (p) => {
+      this.cameraPitch = p[0];
+      this.cameraYaw = p[1];
+      this.updateViewMatrix();
+    }, () => [this.cameraPitch, this.cameraYaw]);
+
+    Inspector.bind3("Camera Position", (p) => {
       this.cameraPosition[0] = p[0];
       this.cameraPosition[1] = p[1];
       this.cameraPosition[2] = p[2];
       this.updateViewMatrix();
     }, () => this.cameraPosition);
+
+    Inspector.separator();
+
+    Inspector.bind2("Sun Angle", (p) => {
+      this.setSunlightDirection(p[0], p[1]);
+    }, () => [this.sunlightPitch, this.sunlightYaw]);
+
+    Inspector.bind1("Shadow Intensity", (n) => this.shadowIntensity = n, this.shadowIntensity);
   }
 
   updateViewMatrix() {
@@ -61,10 +76,11 @@ export default class Scene {
     mat4.copy(this.cameraView, this.view);
     mat4.translate(this.view, this.view, [-this.cameraPosition[0], -this.cameraPosition[1], -this.cameraPosition[2]]);
 
-    Inspector.set("Camera Pitch", this.cameraPitch * 180/Math.PI);
-    Inspector.set("Camera Yaw", this.cameraYaw * 180/Math.PI);
+    //Inspector.set("Camera Pitch", this.cameraPitch * 180/Math.PI);
+    //Inspector.set("Camera Yaw", this.cameraYaw * 180/Math.PI);
 
     Inspector.update("Camera Position");
+    Inspector.update("Camera Angle");
     mat4.multiply(this.viewproj, this.proj, this.view);
     this.updateSunMatrix();
   }
@@ -78,6 +94,7 @@ export default class Scene {
     this.sunlightDirection[2] = Math.cos(yaw) * Math.cos(pitch);
 
     this.updateSunMatrix();
+    Inspector.update("Sun Angle");
   }
 
   updateSunMatrix() {
