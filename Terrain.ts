@@ -14,10 +14,12 @@ uniform vec2 scale;
 
 uniform mat4 view;
 uniform mat4 proj;
+uniform vec3 sundir;
 
 out vec2 _position;
 out float y;
 out vec3 N;
+out float intensity;
 
 void main() {
     y = texture(heightmap, position).r;
@@ -35,6 +37,8 @@ void main() {
 
     _position = vec2(position.x, position.y); 
     gl_Position = proj * view * vec4(scale.x * position.x, scale.y * y, scale.x * position.y, 1);
+
+    intensity = dot(N, sundir) / 2.0 + 0.5;
 }
 `);
 
@@ -47,15 +51,13 @@ uniform sampler2D tex;
 in float y;
 in vec2 _position;
 in vec3 N;
+in float intensity;
 
 out vec4 out_color;
 
 void main() {
-    float light = N.x / 2.0 + 0.5;
     vec4 diffuse = texture(tex, _position * 20.0);
-
-    out_color = light * diffuse +
-       + (1.0 - light) * diffuse * vec4(0.7,0.7,0.9,1);
+    out_color = intensity * diffuse;
 }
 `);
 
@@ -66,6 +68,7 @@ const projMatrixLocation = gl.getUniformLocation(program, 'proj');
 const heightmapLocation = gl.getUniformLocation(program, 'heightmap');
 const textureLocation = gl.getUniformLocation(program, 'tex');
 const scaleLocation = gl.getUniformLocation(program, 'scale');
+const sundirLocation = gl.getUniformLocation(program, 'sundir');
 
 export function getTerrainMesh(resolution: number): TerrainMesh {
   if (resolution in terrainMeshes)
@@ -149,7 +152,7 @@ export default class Terrain implements Drawable {
     img.src = heightmapPath;
   }
 
-  draw(view: any, proj: any, _skybox: WebGLTexture): void {
+  draw(view: any, proj: any, _skybox: WebGLTexture, sundir): void {
     if (!this.ready)
       return;
 
@@ -158,6 +161,7 @@ export default class Terrain implements Drawable {
     gl.uniformMatrix4fv(projMatrixLocation, false, proj);
     gl.uniformMatrix4fv(viewMatrixLocation, false, view);
     gl.uniform2f(scaleLocation, this.resolution, this.height);
+    gl.uniform3fv(sundirLocation, sundir);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.heightmap);

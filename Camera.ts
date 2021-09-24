@@ -15,7 +15,7 @@ const maxPitch =  90 * (Math.PI / 180);
 
 export function mouseLookStep(the_scene: Scene) {
   the_scene.cameraYaw += Time.deltaTime * Input.axes.mouseX.value() * sensitivityX;
-  the_scene.cameraPitch += Time.deltaTime * Input.axes.mouseY.value() * sensitivityY;
+  the_scene.cameraPitch -= Time.deltaTime * Input.axes.mouseY.value() * sensitivityY;
 
   if (the_scene.cameraPitch < minPitch)
     the_scene.cameraPitch = minPitch;
@@ -36,7 +36,7 @@ export function cameraFlyStep(the_scene: Scene) {
 
   let vec = [
     -(cosh * h - sinh * v) * cosv,
-    -v * sinv,
+    v * sinv,
     -(sinh * h + cosh * v) * cosv,
   ];
 

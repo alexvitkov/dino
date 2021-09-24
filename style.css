@@ -11,7 +11,20 @@ body {
 #inspector {
     background: #e0e0e0;
     border-right: 1px solid #ccc;
-    flex: 0 0 350px;
+    flex: 0 0 400px;
+
+    overflow-y: scroll;
+    min-height: 0;
+
+    display: grid;
+    grid-template-columns: 40% 60%;
+    grid-auto-rows: min-content;
+
+    /*
+
+    grid-auto-flow:dense;
+    align-items:start;
+*/
 }
 
 .center_content {

@@ -13,19 +13,26 @@ function frame() {
     Camera.mouseLookStep(Scene.current);
     Camera.cameraFlyStep(Scene.current);
     Scene.current.updateViewMatrix();
+
+
+    if (Input.pressed['e']) {
+      Scene.current.setSunlightDirection(Scene.current.cameraPitch, Scene.current.cameraYaw);
+    }
   }
 }
 
 (async function () {
   await Skybox.init();
 
-  Scene.current.cameraPosition[1] = 25;
+  Scene.current.cameraPosition[1] = 15;
   Scene.current.cameraPosition[2] = 0;
   Scene.current.updateViewMatrix();
 
+  Scene.current.setSunlightDirection(0,0);
+
   const monkeyMesh = await GLTF.load("/assets/smoothcube.gltf")
   const monkeyObj = new RenderObject(monkeyMesh);
-  monkeyObj.position = new Float32Array([0, 0, 0]);
+  monkeyObj.position = new Float32Array([5, 11, 5]);
   monkeyObj.updateModelMatrix();
   Scene.current.addRenderObject(monkeyObj);
 

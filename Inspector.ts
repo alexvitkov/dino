@@ -6,9 +6,9 @@ const reverseLookup = {};
 
 
 
-function formatValue(value: any) {
+function formatValue(value: any): any {
   if (value instanceof Float32Array) {
-    return value.map(v => v.toFixed(3));
+    return Array.from(value).map(v => v.toFixed(3));
   }
 
   else if (Array.isArray(value)) {
@@ -30,17 +30,15 @@ export function set(name: string, value) {
     index = reverseLookup[name];
   }
   else {
-    const entryDiv = document.createElement('div');
     const labelDiv = document.createElement('div');
     const valueDiv = document.createElement('div');
 
-    entryDiv.append(labelDiv, valueDiv);
     labelDiv.innerText = name;
-    inspectorDiv.append(entryDiv);
+    inspectorDiv.append(labelDiv, valueDiv);
 
     index = inspectorDiv.children.length - 1;
     reverseLookup[name] = index;
   }
 
-  (inspectorDiv.children.item(index).children.item(1) as HTMLElement).innerText = formatValue(value);
+  (inspectorDiv.children.item(index) as HTMLElement).innerText = formatValue(value);
 }

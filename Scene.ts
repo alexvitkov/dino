@@ -5,6 +5,7 @@ import Drawable from "./Drawable";
 import Skybox from "./Skybox";
 import * as mat4 from "./gl-matrix/mat4";
 import * as Inspector from "./Inspector";
+import * as Angle from "./Angle";
 
 export default class Scene {
   drawables: Drawable[] = [
@@ -39,12 +40,13 @@ export default class Scene {
   }
 
   updateViewMatrix() {
+    // this.cameraYaw = Angle.normalize(this.cameraYaw);
+
     mat4.identity(this.view);
-    mat4.rotateX(this.view, this.view, this.cameraPitch);
+    mat4.rotateX(this.view, this.view, -this.cameraPitch);
     mat4.rotateY(this.view, this.view, this.cameraYaw);
     mat4.copy(this.cameraView, this.view);
     mat4.translate(this.view, this.view, [-this.cameraPosition[0], -this.cameraPosition[1], -this.cameraPosition[2]]);
-
 
     Inspector.set("Camera Position", this.cameraPosition);
     Inspector.set("Camera Pitch", this.cameraPitch * 180/Math.PI);
@@ -55,17 +57,17 @@ export default class Scene {
     this.sunlightPitch = pitch;
     this.sunlightYaw = yaw;
 
-    // this.sunlightDirection[0] = Math.cos(pitch);
-    // this.sunlightDirection[1] = Math.cos(pitch);
-    // this.sunlightDirection[2] = Math.sin(pitch);
+    this.sunlightDirection[0] = -Math.sin(yaw) * Math.cos(pitch);
+    this.sunlightDirection[1] = -Math.sin(pitch);
+    this.sunlightDirection[2] = Math.cos(yaw) * Math.cos(pitch);
   }
 
   draw() {
     for (const ro of this.drawables)
-      ro.draw(this.view, this.proj, this.skybox.cubemap);
+      ro.draw(this.view, this.proj, this.skybox.cubemap, this.sunlightDirection);
 
     if (this.skybox)
-      this.skybox.draw(this.cameraView, this.proj);
+      this.skybox.draw(this.cameraView, this.proj, this.sunlightDirection);
   }
 
   addRenderObject(obj: RenderObject) {
