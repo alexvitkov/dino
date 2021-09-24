@@ -1,6 +1,8 @@
-import { gl, compileShader, linkProgram } from "./GL";
+import { gl, compileShader, linkProgram, shadow_depth_texture } from "./GL";
 import Drawable from "./Drawable";
+import Scene from "./Scene";
 import * as Texture from "./Texture";
+
 
 const terrainMeshes: {[key: number]: TerrainMesh } = {};
 
@@ -11,17 +13,15 @@ uniform sampler2D heightmap;
 uniform sampler2D tex;
 uniform vec2 scale;
 
-uniform mat4 view;
-uniform mat4 proj;
+uniform mat4 viewproj;
 uniform vec3 sundir;
 
-out vec2 _position;
+out vec3 Position;
 out float y;
 out vec3 N;
 out float intensity;
 
 void main() {
-    y = texture(heightmap, position).r;
 
     vec3 off = vec3(1.0, 1.0, 0.0) / 200.0;
     float hL = texture(heightmap, position - off.xz).r;
@@ -34,8 +34,9 @@ void main() {
     N.y = 2.0 / 200.0;
     N = normalize(N);
 
-    _position = vec2(position.x, position.y); 
-    gl_Position = proj * view * vec4(scale.x * position.x, scale.y * y, scale.x * position.y, 1);
+    float y = texture(heightmap, position).r;
+    Position = scale.xyx * vec3(position.x, y, position.y); 
+    gl_Position = viewproj * vec4(Position, 1);
 
     intensity = dot(N, sundir) / 2.0 + 0.5;
 }
@@ -44,27 +45,46 @@ void main() {
 const frag = compileShader(gl.FRAGMENT_SHADER, `#version 300 es 
 precision highp float;
 
+uniform mat4 sun;
 uniform sampler2D heightmap;
+uniform sampler2D shadowmap;
 uniform sampler2D tex;
 
-in float y;
-in vec2 _position;
+in vec3 Position;
 in vec3 N;
 in float intensity;
 
 out vec4 out_color;
 
 void main() {
-    vec4 diffuse = texture(tex, _position * 20.0);
-    out_color = intensity * diffuse;
+    float intens = intensity;
+
+    vec3 uvpos = (sun * vec4(Position, 1)).xyz;
+    float dist = distance(uvpos.xyz, vec3(0,0,0));
+
+    uvpos = uvpos / 2.0 + vec3(.5, .5, .5);
+
+    if (dist < 1.0) {
+        
+        float other_z = texture(shadowmap, uvpos.xy).r;
+        
+        float zz = uvpos.z - other_z;
+        if (zz > 0.01)
+            intens *= 0.5;
+    }
+
+    vec4 diffuse = texture(tex, Position.xz);
+    out_color = intens * diffuse;
+
 }
 `);
 
 const program = linkProgram(vert, frag);
 
-const viewMatrixLocation = gl.getUniformLocation(program, 'view');
-const projMatrixLocation = gl.getUniformLocation(program, 'proj');
+const viewprojMatrixLocation = gl.getUniformLocation(program, 'viewproj');
+const sunMatrixLocation = gl.getUniformLocation(program, 'sun');
 const heightmapLocation = gl.getUniformLocation(program, 'heightmap');
+const shadowmapLocation = gl.getUniformLocation(program, 'shadowmap');
 const textureLocation = gl.getUniformLocation(program, 'tex');
 const scaleLocation = gl.getUniformLocation(program, 'scale');
 const sundirLocation = gl.getUniformLocation(program, 'sundir');
@@ -195,14 +215,14 @@ export default class Terrain implements Drawable {
     this.terrainMesh.draw();
   }
 
-  draw(view: any, proj: any, _skybox: WebGLTexture, sundir: [number,number,number]): void {
+  draw(viewproj: any, _skybox: WebGLTexture, sundir: [number,number,number]): void {
     if (!this.ready)
       return;
 
     gl.useProgram(program);
 
-    gl.uniformMatrix4fv(projMatrixLocation, false, proj);
-    gl.uniformMatrix4fv(viewMatrixLocation, false, view);
+    gl.uniformMatrix4fv(viewprojMatrixLocation, false, viewproj);
+    gl.uniformMatrix4fv(sunMatrixLocation, false, Scene.current.sunMatrix);
     gl.uniform2f(scaleLocation, this.resolution, this.height);
     gl.uniform3fv(sundirLocation, sundir);
 
@@ -213,6 +233,10 @@ export default class Terrain implements Drawable {
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     gl.uniform1i(textureLocation, 1);
+
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, shadow_depth_texture);
+    gl.uniform1i(shadowmapLocation, 2);
 
     this.terrainMesh.draw();
   }

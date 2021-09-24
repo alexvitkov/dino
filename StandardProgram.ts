@@ -7,8 +7,7 @@ import RenderObject from "./RenderObject";
 
 const vert = compileShader(gl.VERTEX_SHADER, `#version 300 es 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 proj;
+uniform mat4 viewproj;
 uniform vec3 sundir;
 
 layout (location = 0) in vec3 position;
@@ -19,7 +18,7 @@ out vec3 N;
 out float intensity;
 
 void main() {
-    gl_Position = proj * view * model * vec4(position, 1);
+    gl_Position = viewproj * model * vec4(position, 1);
 
     P = vec3(model * vec4(position, 1));
     N = mat3(transpose(inverse(model))) * normal;
@@ -49,8 +48,7 @@ void main() {
 
 const program = linkProgram(vert, frag);
 const modelMatrixLocation = gl.getUniformLocation(program, 'model');
-const viewMatrixLocation = gl.getUniformLocation(program, 'view');
-const projMatrixLocation = gl.getUniformLocation(program, 'proj');
+const viewprojMatrixLocation = gl.getUniformLocation(program, 'viewproj');
 const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
 const sundirLocation = gl.getUniformLocation(program, 'sundir');
 const reflectionCubemapLocation = gl.getUniformLocation(program, 'reflection');
@@ -95,11 +93,10 @@ export class StandardProgramWithObjects implements ProgramWithObjects {
     }
   }
 
-  draw(view: Float32Array, proj: Float32Array, skybox: WebGLTexture, sundir: [number,number,number]) {
+  draw(viewproj: Float32Array, skybox: WebGLTexture, sundir: [number,number,number]) {
     gl.useProgram(program);
 
-    gl.uniformMatrix4fv(projMatrixLocation, false, proj);
-    gl.uniformMatrix4fv(viewMatrixLocation, false, view);
+    gl.uniformMatrix4fv(viewprojMatrixLocation, false, viewproj);
 
     gl.uniform3fv(cameraPositionLocation, Scene.current.cameraPosition);
     gl.uniform3fv(sundirLocation, sundir);

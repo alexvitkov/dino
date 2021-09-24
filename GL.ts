@@ -1,7 +1,7 @@
 export var gl: WebGL2RenderingContext;
 export var canvas: HTMLCanvasElement = document.getElementById("dino_canvas") as HTMLCanvasElement;;
 
-const shadow_resolution = 256;
+export const shadow_resolution = 256;
 
 //
 // WebGL Initialization
@@ -23,6 +23,8 @@ void gl.cullFace(gl.BACK);
 
 // Shadows
 export var shadow_fbo = gl.createFramebuffer();
+gl.enable(gl.DEPTH_TEST); // TODO is this needed?
+gl.depthFunc(gl.LEQUAL);
 
 gl.bindFramebuffer(gl.FRAMEBUFFER, shadow_fbo);
 
@@ -31,10 +33,15 @@ gl.bindTexture(gl.TEXTURE_2D, shadow_color_texture);
 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, shadow_resolution, shadow_resolution, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, shadow_color_texture, 0);
 
-const shadow_depth_texture = gl.createTexture();
+export const shadow_depth_texture = gl.createTexture();
 gl.bindTexture(gl.TEXTURE_2D, shadow_depth_texture);
 gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT16, shadow_resolution, shadow_resolution, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_SHORT, null);
-gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, shadow_color_texture, 0);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, shadow_depth_texture, 0);
+
 
 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 

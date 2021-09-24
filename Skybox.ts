@@ -88,7 +88,7 @@ export default class Skybox implements Drawable {
     const img_posz = loadImage(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, posz, onload, pixel);
   }
 
-  draw(view: any, proj: any, sunlightDirection): void {
+  draw(view: any, proj: any): void {
     if (!skyboxCubeMesh)
       return;
 
