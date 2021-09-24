@@ -4,8 +4,6 @@ import * as Time from "./Time";
 import Scene from "./Scene";
 
 
-let flySpeed = 5;
-
 let sensitivityX = 100;
 let sensitivityY = 100;
 
@@ -25,7 +23,7 @@ export function mouseLookStep(the_scene: Scene) {
 }
 
 
-export function cameraFlyStep(the_scene: Scene) {
+export function cameraFlyStep(the_scene: Scene, flySpeed) {
   let h = -Input.axes.horizontal.value();
   let v = Input.axes.vertical.value();
 

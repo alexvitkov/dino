@@ -49,11 +49,12 @@ export const axes = {
 // Initialize the Input system
 //
 document.onkeydown = function (e: KeyboardEvent) {
-  pressed[e.key] = true;
+  const key = e.key;
+  pressed[e.key.toLowerCase()] = true;
 }
 
 document.onkeyup = function (e: KeyboardEvent) {
-  pressed[e.key] = false;
+  pressed[e.key.toLowerCase()] = false;
 }
 
 document.onmousemove = function (e: MouseEvent) {

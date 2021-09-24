@@ -7,11 +7,13 @@ import Scene from "./Scene";
 import Skybox from "./Skybox";
 import Terrain from "./Terrain";
 
+const flySpeed = 5;
+const sprintSpeed = 20;
 
 function frame() {
   if (Input.hasPointerLock) {
     Camera.mouseLookStep(Scene.current);
-    Camera.cameraFlyStep(Scene.current);
+    Camera.cameraFlyStep(Scene.current, Input.pressed['shift'] ? sprintSpeed : flySpeed);
     Scene.current.updateViewMatrix();
 
 
