@@ -29,6 +29,7 @@ export default class Scene {
   cameraView: Float32Array = mat4.create();
   proj: Float32Array = mat4.create();
   projInverse: Float32Array = mat4.create();
+  sunMatrix: Float32Array = mat4.create();
 
   static current = new Scene();
 
@@ -51,6 +52,8 @@ export default class Scene {
     Inspector.set("Camera Position", this.cameraPosition);
     Inspector.set("Camera Pitch", this.cameraPitch * 180/Math.PI);
     Inspector.set("Camera Yaw", this.cameraYaw * 180/Math.PI);
+
+    this.updateSunMatrix();
   }
 
   setSunlightDirection(pitch: number, yaw: number) {
@@ -60,14 +63,29 @@ export default class Scene {
     this.sunlightDirection[0] = -Math.sin(yaw) * Math.cos(pitch);
     this.sunlightDirection[1] = -Math.sin(pitch);
     this.sunlightDirection[2] = Math.cos(yaw) * Math.cos(pitch);
+
+    this.updateSunMatrix();
+  }
+
+  updateSunMatrix() {
+    mat4.multiply(this.sunMatrix, this.proj, this.view);
   }
 
   draw() {
+
     for (const ro of this.drawables)
-      ro.draw(this.view, this.proj, this.skybox.cubemap, this.sunlightDirection);
+      ro.shadowPass(this.sunMatrix);
+
+    /*
+    for (const ro of this.drawables)
+      ro.draw(this.view, this.proj, this.skybox.cubemap, this.sunlightDirection as any);
+
+    for (const ro of this.drawables)
+      ro.draw(this.view, this.proj, this.skybox.cubemap, this.sunlightDirection as any);
 
     if (this.skybox)
       this.skybox.draw(this.cameraView, this.proj, this.sunlightDirection);
+      */
   }
 
   addRenderObject(obj: RenderObject) {

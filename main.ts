@@ -32,7 +32,7 @@ function frame() {
 
   Scene.current.setSunlightDirection(0,0);
 
-  const monkeyMesh = await GLTF.load("/assets/smoothcube.gltf")
+  const monkeyMesh = await GLTF.load("/assets/monkey.gltf")
   const monkeyObj = new RenderObject(monkeyMesh);
   monkeyObj.position = new Float32Array([5, 11, 5]);
   monkeyObj.updateModelMatrix();

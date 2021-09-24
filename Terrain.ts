@@ -5,7 +5,6 @@ import * as Texture from "./Texture";
 const terrainMeshes: {[key: number]: TerrainMesh } = {};
 
 const vert = compileShader(gl.VERTEX_SHADER, `#version 300 es 
-
 layout (location = 0) in vec2 position;
 
 uniform sampler2D heightmap;
@@ -69,6 +68,34 @@ const heightmapLocation = gl.getUniformLocation(program, 'heightmap');
 const textureLocation = gl.getUniformLocation(program, 'tex');
 const scaleLocation = gl.getUniformLocation(program, 'scale');
 const sundirLocation = gl.getUniformLocation(program, 'sundir');
+
+
+
+const shadow_vert = compileShader(gl.VERTEX_SHADER, `#version 300 es 
+layout (location = 0) in vec2 position;
+
+uniform sampler2D heightmap;
+uniform vec2 scale;
+
+uniform mat4 mat;
+
+void main() {
+    float y = texture(heightmap, position).r;
+    gl_Position = mat * vec4(scale.x * position.x, scale.y * y, scale.x * position.y, 1);
+}
+`);
+
+const shadow_frag = compileShader(gl.FRAGMENT_SHADER, `#version 300 es 
+out highp vec4 out_color;
+void main() {
+    out_color = vec4(1,0,0,1);
+}`)
+
+
+const shadow_program = linkProgram(shadow_vert, shadow_frag);
+const shadow_matLocation = gl.getUniformLocation(shadow_program, 'mat');
+const shadow_heightmapLocation = gl.getUniformLocation(shadow_program, 'heightmap');
+const shadow_scaleLocation = gl.getUniformLocation(shadow_program, 'scale');
 
 export function getTerrainMesh(resolution: number): TerrainMesh {
   if (resolution in terrainMeshes)
@@ -152,7 +179,23 @@ export default class Terrain implements Drawable {
     img.src = heightmapPath;
   }
 
-  draw(view: any, proj: any, _skybox: WebGLTexture, sundir): void {
+  shadowPass(mat: Float32Array): void {
+    if (!this.ready)
+      return;
+
+    gl.useProgram(shadow_program);
+
+    gl.uniformMatrix4fv(shadow_matLocation, false, mat);
+    gl.uniform2f(shadow_scaleLocation, this.resolution, this.height);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.heightmap);
+    gl.uniform1i(shadow_heightmapLocation, 0);
+
+    this.terrainMesh.draw();
+  }
+
+  draw(view: any, proj: any, _skybox: WebGLTexture, sundir: [number,number,number]): void {
     if (!this.ready)
       return;
 
